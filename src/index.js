@@ -16,6 +16,8 @@ function refreshWeather(response) {
   windSpeedElement.innerHTML = `${response.data.wind.speed}km/h`;
   temperatureElement.innerHTML = Math.round(temperature);
   iconElement.innerHTML = `<img src="${response.data.condition.icon_url}" class="weather-app-icon" />`;
+
+  getForecast(response.data.city);
 }
 
 function formatDate(date) {
@@ -47,12 +49,11 @@ function formatDate(date) {
     "November",
     "December",
   ];
-
   let formattedMonth = months[month];
 
-  // if (hours < 10) {
-  //   hours = `0${hours}`;
-  // }
+  if (hours < 10) {
+    hours = `0${hours}`;
+  }
   if (minutes < 10) {
     minutes = `0${minutes}`;
   }
@@ -74,22 +75,24 @@ function handleSearchSubmit(event) {
 }
 function formatDay(timestamp) {
   let date = new Date(timestamp * 1000);
-  let days = ["Tue", "Wed", "Thur", "Fri", "Sat", "Sun", "Mon"];
+  let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   return days[date.getDay()];
 }
 
-function getForest(city) {
+function getForecast(city) {
   let apiKey = "fe340o059ba47039tcf7bf313f23410b";
-  let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
+  let apiUrl = `https://api.shecodes.io/weather/v1/forecast?query=${city}&key=${apiKey}&units=metric`;
   axios.get(apiUrl).then(displayForecast);
+  // console.log(getForecast)
 }
 
 function displayForecast(response) {
   let forecastHtml = "";
 
   response.data.daily.forEach(function (day, index) {
-    if (index < 6) {
-      forecastHtml +
+    if (index < 5) {
+      forecastHtml =
+        forecastHtml +
         `
     <div class="weather-forecast-day">
     <div class="weather-forecast-date">${formatDay(day.time)}</div>
@@ -99,7 +102,7 @@ function displayForecast(response) {
      <strong>${Math.round(day.temperature.maximum)}°</strong>
      </div>
      <div class="weather-forecast-temperature">${Math.round(
-       day.temperature.maximum
+       day.temperature.minimum
      )}°</div>
      </div>
      </div>
